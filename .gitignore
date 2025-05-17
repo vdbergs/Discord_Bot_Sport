@@ -1,9 +1,0 @@
-.env
-
-Python
-
-pycache/ *.pyc *.pyo *.pyd
-
-Database
-
-storage/data/*.db

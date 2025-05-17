@@ -3,6 +3,7 @@ from discord import app_commands
 from dotenv import load_dotenv
 import os
 import logging
+import asyncio
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
@@ -36,7 +37,7 @@ async def on_ready():
         # Clear all global commands
         logger.info("Clearing global commands...")
         tree.clear_commands(guild=None)
-        await tree.sync(guild=None)
+        await asyncio.wait_for(tree.sync(guild=None), timeout=30.0)
         logger.info("Cleared all global commands.")
 
         # Clear guild-specific commands (if GUILD_ID is provided)
@@ -44,13 +45,15 @@ async def on_ready():
             guild = discord.Object(id=GUILD_ID)
             logger.info(f"Clearing guild commands for guild {GUILD_ID}...")
             tree.clear_commands(guild=guild)
-            await tree.sync(guild=guild)
+            await asyncio.wait_for(tree.sync(guild=guild), timeout=30.0)
             logger.info(f"Cleared all guild commands for guild {GUILD_ID}.")
 
         # Register new commands and sync
         logger.info("Registering new commands...")
-        await tree.sync(guild=discord.Object(id=GUILD_ID) if GUILD_ID else None)
+        await asyncio.wait_for(tree.sync(guild=discord.Object(id=GUILD_ID) if GUILD_ID else None), timeout=30.0)
         logger.info("Registered new commands.")
+    except asyncio.TimeoutError:
+        logger.error("Command sync timed out after 30 seconds")
     except discord.HTTPException as e:
         logger.error(f"HTTP error during command sync: {e}")
     except discord.Forbidden as e:
@@ -64,7 +67,7 @@ async def on_ready():
 # Run the client
 try:
     client.run(TOKEN)
-except discord.LoginFailure:
+except продаж.InvalidToken:
     logger.error("Invalid TOKEN provided")
     exit(1)
 except Exception as e:

@@ -4,7 +4,7 @@ class Ping(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='ping')
+    @commands.hybrid_command(name='ping', description='Replies with pong!')
     async def ping(self, ctx):
         await ctx.send('pong')
 

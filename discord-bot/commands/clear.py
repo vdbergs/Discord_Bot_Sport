@@ -10,27 +10,25 @@ class Clear(commands.Cog):
     )
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx: commands.Context, amount: int):
-        """Clears the specified number of messages."""
         if ctx.interaction:
             await ctx.interaction.response.defer(ephemeral=True)
         deleted = await ctx.channel.purge(limit=amount + 1)
-        # For slash commands, use followup to send ephemeral confirmation
+        msg = f"✅ Deleted {len(deleted)-1} messages."
         if ctx.interaction:
-            await ctx.interaction.followup.send(f"✅ Deleted {len(deleted)-1} messages.", ephemeral=True)
+            await ctx.interaction.followup.send(msg, ephemeral=True)
         else:
-            await ctx.send(f"✅ Deleted {len(deleted)-1} messages.", delete_after=3)
+            await ctx.send(msg, delete_after=3)
 
     @clear.error
     async def clear_error(self, ctx, error):
-        msg = None
         if isinstance(error, commands.MissingPermissions):
-            msg = "❌ You need the 'Manage Messages' permission to use this command."
+            msg = "❌ You need the 'Manage Messages' permission."
         elif isinstance(error, commands.MissingRequiredArgument):
-            msg = "❌ Please enter the **number** of messages to delete. Usage: `/clear <amount>`"
+            msg = "❌ Enter the **number** of messages. `/clear <amount>`"
         elif isinstance(error, commands.BadArgument):
-            msg = "❌ Please provide a valid **number**. Usage: `/clear <amount>`"
+            msg = "❌ Provide a valid **number**. `/clear <amount>`"
         else:
-            msg = f"❌ An error occurred: {error}"
+            msg = f"❌ Error: {error}"
         if ctx.interaction:
             await ctx.interaction.response.send_message(msg, ephemeral=True)
         else:

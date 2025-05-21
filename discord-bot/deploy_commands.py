@@ -22,20 +22,12 @@ async def load_cogs():
 
 @bot.event
 async def on_ready():
-    print(f"[READY] {bot.user}")
-    print("[CMDS] Registered:")
-    for command in bot.commands:
-        print(f" - {command.name}")
+    print(f"[DEPLOY] Logged in as {bot.user}")
+    await bot.tree.clear_commands(guild=None)
+    print("[DEPLOY] Cleared all global slash commands.")
     synced = await bot.tree.sync()
-    print(f"[SYNC] {len(synced)} slash commands synced.")
-
-@bot.event
-async def on_command_error(ctx, error):
-    print(f"[ERR] Command: {error}")
-
-@bot.tree.error
-async def on_app_command_error(interaction, error):
-    print(f"[ERR] Slash: {error}")
+    print(f"[DEPLOY] Synced {len(synced)} slash commands.")
+    await bot.close()
 
 async def main():
     await load_cogs()
@@ -45,4 +37,4 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except Exception as e:
-        print(f"[FATAL] {e}")
+        print(f"[DEPLOY-ERR] {e}")
